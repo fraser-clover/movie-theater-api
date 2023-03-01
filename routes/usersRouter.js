@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 
-const { User } = require('../models/User');
-const { Show } = require('../models/Show');
+const { User, Show } = require('../models/index');
 
 router.get("/", async (req, res) => {
   res.send(await User.findAll());
@@ -14,8 +13,8 @@ router.get("/:id", async (req, res) => {
   res.json(user);
 });
 
-router.get("/:id", async (req, res) => { 
-  const showsWatchedByUser = await User.findByPk({ include: Show })
+router.get("/:id/shows", async (req, res) => { 
+  const showsWatchedByUser = await User.findByPk(req.params.id, {include: Show })
   res.send({ showsWatchedByUser });
 })
 
@@ -35,6 +34,12 @@ router.put("/:id", async (req, res) => {
   const singleUser = await User.findByPk(req.params.id);
   const { username, password } = req.body;
   singleShow.update({ username, password });
+  res.status(201).send(singleUser);
+})
+
+router.put("/:id/shows/:showsId", async (req, res) => {
+  const singleUser = await User.findByPk(req.params.id);
+  await singleUser.addShow(req.params.showsId);
   res.status(201).send(singleUser);
 })
 

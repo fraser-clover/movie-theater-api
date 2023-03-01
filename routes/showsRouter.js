@@ -37,3 +37,5 @@ router.delete("/:id", async (req, res) => {
     await singleShow.destroy();
     res.sendStatus(204);
 });
+
+module.exports = router;

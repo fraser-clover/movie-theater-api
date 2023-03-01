@@ -3,6 +3,7 @@ const router = express.Router();
 const { check, validationResult } = require('express-validator');
 
 const { User } = require('../models/User');
+const { Show } = require('../models/Show');
 
 router.get("/", async (req, res) => {
   res.send(await User.findAll());
@@ -12,6 +13,11 @@ router.get("/:id", async (req, res) => {
   const user = await User.findByPk(req.params.id);
   res.json(user);
 });
+
+router.get("/:id", async (req, res) => { 
+  const showsWatchedByUser = await User.findByPk({ include: Show })
+  res.send({ showsWatchedByUser });
+})
 
 router.post('/', [check("username").not().isEmpty().trim()], [check("username").isLength( { min: 5, max: 25 })], async (req, res) => {
     const errors = validationResult(req);
@@ -37,3 +43,5 @@ router.delete("/:id", async (req, res) => {
     await singleUser.destroy();
     res.sendStatus(204);
 });
+
+module.exports = router;
